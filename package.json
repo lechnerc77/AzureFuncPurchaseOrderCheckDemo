@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@sap/cloud-sdk-core": "^1.12.0",
-    "@sap/cloud-sdk-vdm-business-partner-service": "^1.12.0"
+    "@sap/cloud-sdk-vdm-business-partner-service": "^1.12.0",
+    "durable-functions": "^1.3.3"
   },
   "devDependencies": {
     "@azure/functions": "^1.0.2-beta2",
