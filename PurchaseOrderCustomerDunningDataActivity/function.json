@@ -4,6 +4,11 @@
       "name": "name",
       "type": "activityTrigger",
       "direction": "in"
+    },
+    {
+      "name": "starter",
+      "type": "durableClient",
+      "direction": "in"
     }
   ],
   "scriptFile": "../dist/PurchaseOrderCustomerDunningDataActivity/index.js"

@@ -1,6 +1,10 @@
 ﻿import { AzureFunction, Context } from "@azure/functions"
 import { BusinessPartner } from "@sap/cloud-sdk-vdm-business-partner-service"
 
+/*
+No Circuit Breaker Implementation 
+*/
+
 const activityFunction: AzureFunction = async function (context: Context): Promise<JSON> {
 
     let bpData = await getCustomerDataByID(context.bindingData.bpId.toString())

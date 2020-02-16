@@ -1,27 +1,53 @@
 ﻿import { AzureFunction, Context } from "@azure/functions";
+import * as df from "durable-functions";
 import { CustomerDunning } from "@sap/cloud-sdk-vdm-business-partner-service";
-import { isSelectedProperty } from "@sap/cloud-sdk-core";
+import { CircuitBreakerStateValues, CircuitState } from "../util/circuitBreakerTypes";
 
 const activityFunction: AzureFunction = async function (
   context: Context
 ): Promise<JSON> {
 
-  // For demo of timeout
-  await sleep(10000);
+  //Basic check if circuit breaker for topic is open
+  const client = df.getClient(context);
+  const entityId = new df.EntityId("CircuitBreakerEntity", process.env["CircuitBreakerTopic"]);
 
-  let dunningInformation = await getCustomerDunningByID({ customer: context.bindingData.bpId.toString(), companyCode: context.bindingData.companyCode.toString(), dunningArea: context.bindingData.dunningArea.toString() })
+  const entityState = await client.readEntityState(entityId);
 
-  const dunningData: JSON = <JSON><any>{ "dunningLevel": dunningInformation.dunningLevel };
+  if (entityState.entityExists === true) {
+    const circuitBreakerState = <CircuitState>entityState.entityState;
 
-  return dunningData;
+    if (circuitBreakerState.circuitBreakerState == CircuitBreakerStateValues.Open) {
+      throw new Error("Circuit breaker for topic " + process.env["CircuitBreakerTopic"] + " is OPEN");
+    }
+
+  }
+
+  try {
+
+    // Manual data entry due to bug in Durable Extension 2.1.0
+    const bpId = "17100001";
+    const companyCode = "1710";
+    //Wrong parameter value to cause error 
+    const dunningArea = "25";
+
+    let dunningInformation = await getCustomerDunningByID({ customer: bpId.toString(), companyCode: companyCode.toString(), dunningArea: dunningArea.toString() })
+
+    const dunningData: JSON = <JSON><any>{ "dunningLevel": dunningInformation.dunningLevel };
+
+    return dunningData;
+  }
+  catch (error) {
+
+    // Signal the circuit breaker that something went wrong 
+    const currentDate = Date.now();
+    await client.signalEntity(entityId, "error", currentDate);
+
+    //Re-raise error and let the orchestrator do his thing
+    throw error;
+  }
+
 
 };
-
-export default activityFunction;
-
-async function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function getCustomerDunningByID({
   customer,
@@ -39,3 +65,5 @@ async function getCustomerDunningByID({
       url: process.env["APIHubDestination"]
     });
 }
+
+export default activityFunction;

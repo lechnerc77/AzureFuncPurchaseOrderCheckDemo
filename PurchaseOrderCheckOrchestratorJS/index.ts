@@ -1,40 +1,37 @@
 ﻿import * as df from "durable-functions";
-import moment from "moment";
+import { CircuitBreakerStateValues, CircuitState } from "../util/circuitBreakerTypes";
 import { DunningDetailData, DunningLevelData } from "../util/dunningDataTypes";
-
 
 const orchestrator = df.orchestrator(function* (context) {
 
+    const entityId = new df.EntityId("CircuitBreakerEntity", process.env["CircuitBreakerTopic"]);
+    const state: CircuitState = yield context.df.callEntity(entityId, "getState");
+    if (state.circuitBreakerState == CircuitBreakerStateValues.Open) {
+        //Circuit breaker is OPEN! => Abort the processing
+        context.log(state);
+        raiseCircuitError();
+    }
+
     const retryOptions: df.RetryOptions = getRetryConfig();
 
+    let result: DunningLevelData = yield context.df.callActivityWithRetry("PurchaseOrderCustomerDunningDataActivity", retryOptions, context.bindingData);
+
     /*
-    Introducing a racing condition for the first OData call
-    Even in case of no error, we might want to trigger a timeout
+    Just for Demo Purposes: Leave out the second call, just for demo purposes
+    context.bindingData.dunningLevel = result.dunningLevel;
+
+    let detailData: DetailData = yield context.df.callActivity("PurchaseOrderCustomerAddDataActivity", context.bindingData.input);
+     return detailData;
     */
-    const dunningLevelTask = context.df.callActivityWithRetry("PurchaseOrderCustomerDunningDataActivity", retryOptions, context.bindingData.input);
-    const deadline = moment.utc(context.df.currentUtcDateTime).add(+process.env["timeoutInMilliseconds"], "ms");
-    const timeoutTask1 = context.df.createTimer(deadline.toDate());
-
-    const winner = yield context.df.Task.any([dunningLevelTask, timeoutTask1]);
-
-    if (winner === dunningLevelTask) {
-        timeoutTask1.cancel();
-        let result: DunningLevelData = <DunningLevelData>dunningLevelTask.result;
-        context.bindingData.input.dunningLevel = result.dunningLevel;
-        context.log("Dunning level fetched before timeout")
-    }
-    else {
-        context.log("Dunning level call timed out ...")
-        throw new Error('Timeout during processing of OData call');
-    }
-
-    let detailData: DunningDetailData = yield context.df.callActivityWithRetry("PurchaseOrderCustomerAddDataActivity", retryOptions, context.bindingData.input);
-
-    return detailData;
 
 });
 
 export default orchestrator;
+
+function raiseCircuitError() {
+    const fireCircuitBreakerActiveError = new Error("Circuit Breaker for topic " + process.env["CircuitBreakerTopic"] + " is open");
+    throw fireCircuitBreakerActiveError;
+}
 
 function getRetryConfig(): df.RetryOptions {
     const retryConfig: df.RetryOptions = new df.RetryOptions(+process.env["firstRetryIntervalInMilliseconds"], +process.env["maxNumberOfAttempts"]);
