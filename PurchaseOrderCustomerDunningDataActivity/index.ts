@@ -1,20 +1,16 @@
 ﻿import { AzureFunction, Context } from "@azure/functions";
 import { CustomerDunning } from "@sap/cloud-sdk-vdm-business-partner-service";
 
-const activityFunction: AzureFunction = async function(
+const activityFunction: AzureFunction = async function (
   context: Context
 ): Promise<JSON> {
-  try {
-    let dunningInformation = await getCustomerDunningByID({ customer: context.bindingData.bpId.toString(), companyCode: context.bindingData.companyCode.toString(), dunningArea: context.bindingData.dunningArea.toString() })
 
-    const dunningData:JSON = <JSON><any>{ "dunningLevel": dunningInformation.dunningLevel};
+  let dunningInformation = await getCustomerDunningByID({ customer: context.bindingData.bpId.toString(), companyCode: context.bindingData.companyCode.toString(), dunningArea: context.bindingData.dunningArea.toString() })
 
-    return dunningData;
-    
-  } catch (error) {
-    context.log("Error in OData call happend: ", error);
-    throw error;
-  }
+  const dunningData: JSON = <JSON><any>{ "dunningLevel": dunningInformation.dunningLevel };
+
+  return dunningData;
+
 };
 
 async function getCustomerDunningByID({

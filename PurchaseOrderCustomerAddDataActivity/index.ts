@@ -3,17 +3,11 @@ import { BusinessPartner } from "@sap/cloud-sdk-vdm-business-partner-service"
 
 const activityFunction: AzureFunction = async function (context: Context): Promise<JSON> {
 
-    try {
-        let bpData = await getCustomerDataByID(context.bindingData.bpId.toString())
-        
-        const detailData:JSON = <JSON><any>{ "bpId": context.bindingData.bpId, "company": context.bindingData.companyCode, "fullName": bpData.businessPartnerFullName, "dunningLevel": context.bindingData.dunningLevel };
-        
-        return detailData;
+    let bpData = await getCustomerDataByID(context.bindingData.bpId.toString())
 
-    } catch (error) {
-        context.log("Error in OData call happend: ", error);
-        throw error;
-    }
+    const detailData: JSON = <JSON><any>{ "bpId": context.bindingData.bpId, "company": context.bindingData.companyCode, "fullName": bpData.businessPartnerFullName, "dunningLevel": context.bindingData.dunningLevel };
+
+    return detailData;
 
 };
 
