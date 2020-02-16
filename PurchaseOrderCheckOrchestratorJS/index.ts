@@ -1,20 +1,32 @@
 ﻿import * as df from "durable-functions";
+import moment from "moment";
 import { DunningDetailData, DunningLevelData } from "../util/dunningDataTypes";
+
 
 const orchestrator = df.orchestrator(function* (context) {
 
     const retryOptions: df.RetryOptions = getRetryConfig();
 
     /*
-    // For demo purposes
-        if (context.df.isReplaying == true) {
-            context.bindingData.input.dunningArea = " "
-        }
+    Introducing a racing condition for the first OData call
+    Even in case of no error, we might want to trigger a timeout
     */
+    const dunningLevelTask = context.df.callActivityWithRetry("PurchaseOrderCustomerDunningDataActivity", retryOptions, context.bindingData.input);
+    const deadline = moment.utc(context.df.currentUtcDateTime).add(+process.env["timeoutInMilliseconds"], "ms");
+    const timeoutTask1 = context.df.createTimer(deadline.toDate());
 
-    let result: DunningLevelData = yield context.df.callActivityWithRetry("PurchaseOrderCustomerDunningDataActivity", retryOptions, context.bindingData.input);
+    const winner = yield context.df.Task.any([dunningLevelTask, timeoutTask1]);
 
-    context.bindingData.input.dunningLevel = result.dunningLevel;
+    if (winner === dunningLevelTask) {
+        timeoutTask1.cancel();
+        let result: DunningLevelData = <DunningLevelData>dunningLevelTask.result;
+        context.bindingData.input.dunningLevel = result.dunningLevel;
+        context.log("Dunning level fetched before timeout")
+    }
+    else {
+        context.log("Dunning level call timed out ...")
+        throw new Error('Timeout during processing of OData call');
+    }
 
     let detailData: DunningDetailData = yield context.df.callActivityWithRetry("PurchaseOrderCustomerAddDataActivity", retryOptions, context.bindingData.input);
 

@@ -1,9 +1,13 @@
 ﻿import { AzureFunction, Context } from "@azure/functions";
 import { CustomerDunning } from "@sap/cloud-sdk-vdm-business-partner-service";
+import { isSelectedProperty } from "@sap/cloud-sdk-core";
 
 const activityFunction: AzureFunction = async function (
   context: Context
 ): Promise<JSON> {
+
+  // For demo of timeout
+  await sleep(10000);
 
   let dunningInformation = await getCustomerDunningByID({ customer: context.bindingData.bpId.toString(), companyCode: context.bindingData.companyCode.toString(), dunningArea: context.bindingData.dunningArea.toString() })
 
@@ -12,6 +16,12 @@ const activityFunction: AzureFunction = async function (
   return dunningData;
 
 };
+
+export default activityFunction;
+
+async function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function getCustomerDunningByID({
   customer,
@@ -29,5 +39,3 @@ async function getCustomerDunningByID({
       url: process.env["APIHubDestination"]
     });
 }
-
-export default activityFunction;
