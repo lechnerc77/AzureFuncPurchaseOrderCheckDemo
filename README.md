@@ -1,6 +1,6 @@
 # Purchase Order Demo
 The basic intention of this code is described in the blog post [“A Serverless Extension Story – From ABAP to Azure”](https://blogs.sap.com/2019/12/09/a-serverless-extension-story-from-abap-to-azure/). 
-This code is the fourth enhancement as described in the blog post ["A Serverless Extension Story II – Brining State to the Stateless"](https://blogs.sap.com/2019/12/09/a-serverless-extension-story-from-abap-to-azure/). It introduces a basic circuit breaker for the HTTP call making use of Durable Entities. 
+This code is the fourth enhancement as described in the blog post ["A Serverless Extension Story II – Bringing State to the Stateless"](https://blogs.sap.com/2020/02/17/a-serverless-extension-story-ii-bringing-state-to-the-stateless/). It introduces a basic circuit breaker for the HTTP call making use of Durable Entities. 
 
 ## Branch
 You are on the durablefuncV2CircuitBreaker branch.
