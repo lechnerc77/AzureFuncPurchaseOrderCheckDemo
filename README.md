@@ -1,6 +1,6 @@
 # Purchase Order Demo
 The basic intention of this code is described in the blog post [“A Serverless Extension Story – From ABAP to Azure”](https://blogs.sap.com/2019/12/09/a-serverless-extension-story-from-abap-to-azure/). 
-This code is the first enhancement as described in the blog post ["A Serverless Extension Story II – Brining State to the Stateless"](https://blogs.sap.com/2019/12/09/a-serverless-extension-story-from-abap-to-azure/). It splits up the single AZure function into a Durable Function orchestration with an activity for each outbound HTTP call. 
+This code is the first enhancement as described in the blog post ["A Serverless Extension Story II – Bringing State to the Stateless"](https://blogs.sap.com/2020/02/17/a-serverless-extension-story-ii-bringing-state-to-the-stateless/). It splits up the single Azure Function into a Durable Function orchestration with an activity for each outbound HTTP call. 
 ## Branch
 You are on the durablefuncV2 branch.
 ## Setup
