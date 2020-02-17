@@ -1,6 +1,6 @@
 # Purchase Order Demo
 The basic intention of this code is described in the blog post [“A Serverless Extension Story – From ABAP to Azure”](https://blogs.sap.com/2019/12/09/a-serverless-extension-story-from-abap-to-azure/). 
-This code is the second enhancement as described in the blog post ["A Serverless Extension Story II – Brining State to the Stateless"](https://blogs.sap.com/2019/12/09/a-serverless-extension-story-from-abap-to-azure/). It contains a first error handling of the HTTP calls by introducing the retry functionality of Durable Functions. 
+This code is the second enhancement as described in the blog post ["A Serverless Extension Story II – Bringing State to the Stateless"](https://blogs.sap.com/2020/02/17/a-serverless-extension-story-ii-bringing-state-to-the-stateless/). It contains a first error handling of the HTTP calls by introducing the retry functionality of Durable Functions. 
 ## Branch
 You are on the durablefuncV2retry branch.
 ## Setup
