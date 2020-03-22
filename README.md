@@ -22,7 +22,12 @@ The body of the call must contain the following data:
 ```
 
 ## Demo Setup
-The amount of the timeout is set via the environment parameter `timeoutInMilliseconds`. The activity function `PurchaseOrderCustomerDunningDataActivity` cnatins a sleep functionality that waits 10 seconds until it issues the HTTP call. By tuning the environemnt parameter you can play around with the racing condition.
+The amount of the timeout is set via the environment parameter `timeoutInMilliseconds`. The activity function `PurchaseOrderCustomerDunningDataActivity` contains a sleep functionality that waits 10 seconds until it issues the HTTP call. By tuning the environemnt parameter you can play around with this racing condition.
 
 ## Local Setting
 If you want to develop locally, you need to create a local.settings.json file. You find a template in my [gist](https://gist.github.com/lechnerc77/2da9c96d902cc554ce8250f202cb7f5b)
+
+## Updates 
+### 03/22/2020
+* Tested with Function runtime V3 (nodeJS 12 LTS) and Durable Extension 2.2.0
+* Added file `RESTcalls.http`. This way you can use the [REST client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) of Visual Studio Code to issue the calls
