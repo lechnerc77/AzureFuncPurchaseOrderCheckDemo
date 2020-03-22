@@ -6,17 +6,38 @@ This code is the fourth enhancement as described in the blog post ["A Serverless
 You are on the durablefuncV2CircuitBreaker branch.
 
 ## Setup
-* Execute a `npm install` in the project directory
-* Execute a `npm run build` to build the project
-* Execute a `func extensions install` to install the durable function extension explicitly
+* Execute `npm install` in the project directory
+* Execute `func extensions install` to install the durable function extension explicitly
+* Execute `npm run build` to build the project
 
 ## Calling the project
 To trigger the  project you issue an HTTP GET/POST call to the endpoint ` http://localhost:7071/api/orchestrators/PurchaseOrderCheckOrchestratorJS`.
 
-As there is a bug in the durable function extension version 2.1.x there must not be any body handed over to the HTTP call. This issue will be fixed with version 2.2.0
+The body of the __correct__ call must contain the following data:
+```
+{
+	"bpId": "17100001",
+	"companyCode": "1710",
+	"dunningArea": " "
+}
+```
+
+The body of the __wrong__ call must contain the following data:
+```
+{
+	"bpId": "17100001",
+	"companyCode": "1710",
+	"dunningArea": "1234"
+}
+```
 
 ## Demo Setup
-The wrong data of the call is currently set explicitly in the `index.ts` file of `PurchaseOrderCustomerDunningDataActivity` to open the circuit breaker. To trigger the circuit breaker, fire several calls to the HTTP endpoint. 
+To trigger the circuit breaker, fire several calls with the wrong data to the HTTP endpoint. 
 
 ## Local Setting
 If you want to develop locally, you need to create a local.settings.json file. You find a template in my [gist](https://gist.github.com/lechnerc77/2da9c96d902cc554ce8250f202cb7f5b)
+
+## Updates 
+### 03/22/2020
+* Tested with Function runtime V3 (nodeJS 12 LTS) and Durable Extension 2.2.0
+* Added file `RESTcalls.http`. This way you can use the [REST client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) of Visual Studio Code to issue the calls

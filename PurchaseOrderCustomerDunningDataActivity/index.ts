@@ -24,13 +24,7 @@ const activityFunction: AzureFunction = async function (
 
   try {
 
-    // Manual data entry due to bug in Durable Extension 2.1.0
-    const bpId = "17100001";
-    const companyCode = "1710";
-    //Wrong parameter value to cause error 
-    const dunningArea = "25";
-
-    let dunningInformation = await getCustomerDunningByID({ customer: bpId.toString(), companyCode: companyCode.toString(), dunningArea: dunningArea.toString() })
+    let dunningInformation = await getCustomerDunningByID({ customer: context.bindingData.input.bpId.toString(), companyCode: context.bindingData.input.companyCode.toString(), dunningArea: context.bindingData.input.dunningArea.toString() })
 
     const dunningData: JSON = <JSON><any>{ "dunningLevel": dunningInformation.dunningLevel };
 
