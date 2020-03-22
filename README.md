@@ -4,8 +4,9 @@ This code is the second enhancement as described in the blog post ["A Serverless
 ## Branch
 You are on the durablefuncV2retry branch.
 ## Setup
-* Execute a `npm install` in the project directory
-* Execute a `npm run build` to build the project
+* Execute `npm install` in the project directory
+* Execute `func extensions install` in the project directory
+* Execute `npm run build` to build the project
 ## Calling the project
 To trigger the  project you issue an HTTP GET/POST call to the endpoint ` http://localhost:7071/api/orchestrators/PurchaseOrderCheckOrchestratorJS`.
 
@@ -26,12 +27,18 @@ The body of the unsuccessful call must contain the following data:
 }
 ```
 ## Demo Setup
-The orchestration function contains a commented peace of code that can be used to first issue a wrong call and then adopt the data to make it successful in the first replay. The code is given by:
+The orchestration function contains a commented piece of code that can be used to first issue a wrong call and then adopt the data to make it successful in the first replay. The code is given by:
 ```
  if (context.df.isReplaying == true) {
             context.bindingData.input.dunningArea = " "
         }
 ```
+You can see the handling of this situation in the Azure Storage Explorer
 
 ## Local Setting
 If you want to develop locally, you need to create a local.settings.json file. You find a template in my [gist](https://gist.github.com/lechnerc77/2da9c96d902cc554ce8250f202cb7f5b)
+
+## Updates 
+### 03/22/2020
+* Tested with Function runtime V3 (nodeJS 12 LTS) and Durable Extension 2.2.0
+* Added file `RESTcalls.http`. This way you can use the [REST client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) of Visual Studio Code to issue the calls

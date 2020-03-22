@@ -5,12 +5,12 @@ const orchestrator = df.orchestrator(function* (context) {
 
     const retryOptions: df.RetryOptions = getRetryConfig();
 
-    /*
+/*    
     // For demo purposes
         if (context.df.isReplaying == true) {
             context.bindingData.input.dunningArea = " "
         }
-    */
+*/    
 
     let result: DunningLevelData = yield context.df.callActivityWithRetry("PurchaseOrderCustomerDunningDataActivity", retryOptions, context.bindingData.input);
 
