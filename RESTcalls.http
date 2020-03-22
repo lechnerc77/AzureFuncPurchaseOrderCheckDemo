@@ -1,0 +1,12 @@
+### Invoke Function
+POST http://localhost:7071/api/orchestrators/PurchaseOrderCheckOrchestratorJS HTTP/1.1
+content-type: application/json
+
+{
+	"bpId": "17100001",
+	"companyCode": "1710",
+	"dunningArea": " "
+}
+
+### Get status/result of the call to the S4 system
+GET http://localhost:7071/runtime/webhooks/durabletask/instances/<PUT YOUR DATA HERE>
