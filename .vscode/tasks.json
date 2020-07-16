@@ -12,7 +12,10 @@
             "type": "shell",
             "label": "npm build",
             "command": "npm run build",
-            "dependsOn": "npm install",
+            "dependsOn": [
+                "func: extensions install",
+                "npm install"
+            ],
             "problemMatcher": "$tsc"
         },
         {
